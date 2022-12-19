@@ -1,0 +1,60 @@
+package main
+
+import (
+	"context"
+	"log"
+	"time"
+
+	"github.com/joho/godotenv"
+	"go.uber.org/zap"
+
+	"github.com/AlexeyKluev/user-balance/internal/app"
+	"github.com/AlexeyKluev/user-balance/internal/config"
+	"github.com/AlexeyKluev/user-balance/internal/server"
+	"github.com/AlexeyKluev/user-balance/internal/version"
+)
+
+func main() {
+	// Загружаем env-переменные
+	_ = godotenv.Load()
+
+	// Создаем конфиг
+	cfg, err := config.InitConfig(version.App)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//// Создаем ресурсы
+	resources, err := app.NewResources(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Создаем веб-сервер
+	srv := server.NewServer(resources.Logger)
+	srv.InitMiddlewares(resources)
+	srv.InitRoutes(resources)
+
+	_, cancelCtx := context.WithCancel(context.Background())
+
+	beforeShutdown := func() {
+		resources.Logger.Info("Остановка сервера...")
+
+		cancelCtx()
+
+		if !resources.Config.IsProduction {
+			const shutdownIdle = 5 * time.Second
+
+			time.Sleep(shutdownIdle)
+		}
+
+		if err := resources.Close(); err != nil {
+			resources.Logger.Error("Не удалось закрыть ресурсы", zap.Error(err))
+		}
+	}
+
+	// Запускаем веб-сервер
+	if err = srv.ListenAndServe(resources.Config.Addr, beforeShutdown); err != nil {
+		resources.Logger.Fatal("Ошибка при запуске сервера", zap.Error(err))
+	}
+}
