@@ -14,18 +14,18 @@ type Repository struct {
 }
 
 func NewRepository(
-	// config *postgres.Config,
+	config *postgres.Config,
 	logger *zap.Logger,
 ) (*Repository, error) {
-	// pgDB, err := postgres.NewConnection(config)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	pgDB, err := postgres.NewConnection(config)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Repository{
-		// pgDB:   pgDB,
+		pgDB:   pgDB,
 		logger: logger,
-		User:   pgRepo.NewUserRepo( /*pgDB.Master(),*/ logger),
+		User:   pgRepo.NewUserRepo(pgDB.Master(), logger),
 	}, nil
 }
 

@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/AlexeyKluev/user-balance/internal/domain/model"
 )
 
 type UserRepository interface {
-	GetByID(id int64) (model.User, error)
+	GetByID(ctx context.Context, id int64) (model.User, error)
 }

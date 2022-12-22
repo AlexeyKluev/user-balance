@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/vrischmann/envconfig"
+
+	"github.com/AlexeyKluev/user-balance/internal/system/postgres"
 )
 
 // Config struct
@@ -11,7 +13,7 @@ type Config struct {
 	Addr         string `envconfig:"default=0.0.0.0:8080"`
 	IsProduction bool   `envconfig:"default=false"`
 	// Redis        *redis.Config
-	// Postgres     *postgres.Config
+	Postgres *postgres.Config
 }
 
 // InitConfig func

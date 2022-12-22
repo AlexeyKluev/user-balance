@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -9,6 +10,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/AlexeyKluev/user-balance/internal/app"
+	"github.com/AlexeyKluev/user-balance/internal/usecase"
 )
 
 func NewUserBalanceHandler(resources *app.Resources) http.HandlerFunc {
@@ -24,8 +26,12 @@ func NewUserBalanceHandler(resources *app.Resources) http.HandlerFunc {
 			return
 		}
 
-		balance, err := resources.UserBalanceUC.Balance(id)
+		balance, err := resources.UserBalanceUC.Balance(r.Context(), id)
 		if err != nil {
+			if errors.Is(err, usecase.ErrNotFound) {
+				http.NotFound(w, r)
+				return
+			}
 			resources.Logger.Error("failed get user balance", zap.Error(err))
 			http.Error(w, http.StatusText(500), 500)
 			return

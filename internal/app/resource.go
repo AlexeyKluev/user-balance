@@ -31,7 +31,7 @@ func NewResources(config *config.Config) (*Resources, error) {
 
 	// Репозиторий
 	repo, err := repository.NewRepository(
-		// config.Postgres,
+		config.Postgres,
 		logger,
 	)
 	if err != nil {
