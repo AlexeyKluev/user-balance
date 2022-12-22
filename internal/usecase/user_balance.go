@@ -8,14 +8,14 @@ import (
 )
 
 type UserBalanceUseCase struct {
-	userService UserService
+	userService UserBalanceService
 }
 
-func NewUserBalanceUseCase(us UserService) *UserBalanceUseCase {
+func NewUserBalanceUseCase(us UserBalanceService) *UserBalanceUseCase {
 	return &UserBalanceUseCase{us}
 }
 
-type UserService interface {
+type UserBalanceService interface {
 	Balance(ctx context.Context, id int64) (string, error)
 }
 

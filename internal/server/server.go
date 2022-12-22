@@ -76,6 +76,7 @@ func (s *Server) InitRoutes(resources *app.Resources) {
 	s.router.Handle("/metrics", promhttp.HandlerFor(resources.MetricsCollector.Registry, promhttp.HandlerOpts{}))
 
 	s.router.Get("/users/{id:[0-9]+}/balance", handlers.NewUserBalanceHandler(resources))
+	s.router.Post("/users/{id:[0-9]+}/accural", handlers.NewAccrualFundsHandler(resources))
 }
 
 func (s *Server) ListenAndServe(addr string, shutdownInitiated func()) error {
