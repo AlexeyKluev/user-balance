@@ -21,19 +21,19 @@ func NewUserService(r repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) Balance(ctx context.Context, id int64) (string, error) {
+func (s *UserService) Balance(ctx context.Context, id int64) (*money.Money, error) {
 	timeout, cancelFunc := context.WithTimeout(ctx, time.Second*5)
 	defer cancelFunc()
 
 	user, err := s.repo.GetByID(timeout, id)
 	if err != nil {
 		if errors.Is(err, postgres.ErrNotFound) {
-			return "", ErrNotFound
+			return nil, ErrNotFound
 		}
-		return "", err
+		return nil, err
 	}
 
-	return money.New(user.Balance, money.RUB).Display(), nil
+	return money.New(user.Balance, money.RUB), nil
 }
 
 func (s *UserService) UserIsBan(ctx context.Context, id int64) (bool, error) {

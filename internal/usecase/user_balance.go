@@ -15,10 +15,6 @@ func NewUserBalanceUseCase(us UserBalanceService) *UserBalanceUseCase {
 	return &UserBalanceUseCase{us}
 }
 
-type UserBalanceService interface {
-	Balance(ctx context.Context, id int64) (string, error)
-}
-
 func (u *UserBalanceUseCase) Balance(ctx context.Context, id int64) (string, error) {
 	balance, err := u.userService.Balance(ctx, id)
 	if err != nil {
@@ -28,5 +24,5 @@ func (u *UserBalanceUseCase) Balance(ctx context.Context, id int64) (string, err
 		return "", err
 	}
 
-	return balance, nil
+	return balance.Display(), nil
 }

@@ -25,18 +25,6 @@ func NewAccuralFundsUseCase(
 	}
 }
 
-type AccuralFundsService interface {
-	Accural(context.Context, dto.AccuralDTO) error
-}
-
-type UserBanService interface {
-	UserIsBan(ctx context.Context, id int64) (bool, error)
-}
-
-type UserExistService interface {
-	UserExist(ctx context.Context, id int64) (bool, error)
-}
-
 func (uc *AccuralFundsUseCase) Accural(ctx context.Context, input dto.AccuralDTO) error {
 	timeoutUserExist, cancelFuncUserExist := context.WithTimeout(ctx, time.Second*1)
 	defer cancelFuncUserExist()

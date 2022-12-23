@@ -12,6 +12,7 @@ type Repository struct {
 	logger  *zap.Logger
 	User    UserRepository
 	Accural AccuralFundsRepository
+	Reserve ReserveFundsRepository
 }
 
 func NewRepository(
@@ -28,6 +29,7 @@ func NewRepository(
 		logger:  logger,
 		User:    pgRepo.NewUserRepo(pgDB.Master(), logger),
 		Accural: pgRepo.NewAccuralRepo(pgDB.Master(), logger),
+		Reserve: pgRepo.NewReserveFundsRepo(pgDB.Master(), logger),
 	}, nil
 }
 

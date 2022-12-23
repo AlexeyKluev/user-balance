@@ -13,11 +13,12 @@ import (
 )
 
 type Resources struct {
-	Config           *config.Config
-	Logger           *zap.Logger
-	MetricsCollector *metrics.Collector
-	UserBalanceUC    *usecase.UserBalanceUseCase
-	AccuralFundsUC   *usecase.AccuralFundsUseCase
+	Config             *config.Config
+	Logger             *zap.Logger
+	MetricsCollector   *metrics.Collector
+	UserBalanceUC      *usecase.UserBalanceUseCase
+	AccuralFundsUC     *usecase.AccuralFundsUseCase
+	ReservationFundsUC *usecase.ReservationFundsUseCase
 }
 
 func NewResources(config *config.Config) (*Resources, error) {
@@ -42,17 +43,20 @@ func NewResources(config *config.Config) (*Resources, error) {
 	// Services
 	userService := service.NewUserService(repo.User)
 	accrualService := service.NewAccrualService(repo.Accural)
+	reserveFundsService := service.NewReserveFundsService(repo.Reserve)
 
 	// UseCases
 	balanceUseCase := usecase.NewUserBalanceUseCase(userService)
 	accuralFundsUseCase := usecase.NewAccuralFundsUseCase(accrualService, userService, userService)
+	reservationFundsUseCase := usecase.NewReservationFundsUseCase(userService, userService, reserveFundsService)
 
 	return &Resources{
-		Config:           config,
-		Logger:           logger,
-		MetricsCollector: metricsCollector,
-		UserBalanceUC:    balanceUseCase,
-		AccuralFundsUC:   accuralFundsUseCase,
+		Config:             config,
+		Logger:             logger,
+		MetricsCollector:   metricsCollector,
+		UserBalanceUC:      balanceUseCase,
+		AccuralFundsUC:     accuralFundsUseCase,
+		ReservationFundsUC: reservationFundsUseCase,
 	}, nil
 }
 

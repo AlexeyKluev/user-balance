@@ -77,6 +77,7 @@ func (s *Server) InitRoutes(resources *app.Resources) {
 
 	s.router.Get("/users/{id:[0-9]+}/balance", handlers.NewUserBalanceHandler(resources))
 	s.router.Post("/users/{id:[0-9]+}/accural", handlers.NewAccrualFundsHandler(resources))
+	s.router.Post("/users/{id:[0-9]+}/reservation", handlers.NewReservationFundsHandler(resources))
 }
 
 func (s *Server) ListenAndServe(addr string, shutdownInitiated func()) error {

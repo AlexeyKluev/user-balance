@@ -27,4 +27,19 @@ CREATE TABLE "public"."transactions"
     PRIMARY KEY ("id")
 );
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "transactions_idx__user_id" ON "public"."transactions" USING BTREE (user_id)
+CREATE INDEX CONCURRENTLY IF NOT EXISTS "transactions_idx__user_id" ON "public"."transactions" USING BTREE (user_id);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS reservations_id_seq;
+
+CREATE TABLE "public"."reservations"
+(
+    "id"         bigint NOT NULL DEFAULT nextval('reservations_id_seq'::regclass),
+    "user_id"    bigint NOT NULL REFERENCES "public"."users" ("id"),
+    "order_id"   bigint NOT NULL,
+    "service_id" bigint NOT NULL,
+    "amount"     bigint NOT NULL,
+    "created_at" timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS "reservations_idx__user_id__order_id__service_id" ON "public"."reservations" USING BTREE (user_id, order_id, service_id);
