@@ -27,3 +27,7 @@ type UserBalanceService interface {
 type ReserveFundsService interface {
 	ReserveFunds(ctx context.Context, input dto.ReservationDTO) error
 }
+
+type UserCreateService interface {
+	Create(ctx context.Context, id int64) error
+}

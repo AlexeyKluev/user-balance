@@ -30,8 +30,6 @@ func (r *UserRepo) GetByID(ctx context.Context, id int64) (model.User, error) {
 
 	sqlq, args, err := sq.Select(
 		"id",
-		"first_name",
-		"last_name",
 		"status",
 		"balance",
 		"created_at",
@@ -57,8 +55,6 @@ func (r *UserRepo) UserExist(ctx context.Context, id int64) (bool, error) {
 
 	sqlq, args, err := sq.Select(
 		"id",
-		"first_name",
-		"last_name",
 		"status",
 		"balance",
 		"created_at",
@@ -90,8 +86,6 @@ func (r *UserRepo) UserIsBan(ctx context.Context, id int64) (bool, error) {
 
 	sqlq, args, err := sq.Select(
 		"id",
-		"first_name",
-		"last_name",
 		"status",
 		"balance",
 		"created_at",
@@ -116,4 +110,22 @@ func (r *UserRepo) UserIsBan(ctx context.Context, id int64) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func (r *UserRepo) Create(ctx context.Context, id int64) error {
+	sqlq, args, err := sq.Insert("users").
+		Columns("id", "status", "balance").
+		Values(id, enum.StatusActive, 0).
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+
+	if err != nil {
+		return err
+	}
+
+	if _, err = r.db.ExecContext(ctx, sqlq, args...); err != nil {
+		return err
+	}
+
+	return nil
 }

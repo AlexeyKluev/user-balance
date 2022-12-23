@@ -101,8 +101,6 @@ func (r *ReserveFundsRepo) balance(ctx context.Context, tx *sqlx.Tx, id int64) (
 
 	sqlq, args, err := sq.Select(
 		"id",
-		"first_name",
-		"last_name",
 		"status",
 		"balance",
 		"created_at",

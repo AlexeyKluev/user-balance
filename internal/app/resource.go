@@ -47,7 +47,7 @@ func NewResources(config *config.Config) (*Resources, error) {
 
 	// UseCases
 	balanceUseCase := usecase.NewUserBalanceUseCase(userService)
-	accuralFundsUseCase := usecase.NewAccuralFundsUseCase(accrualService, userService, userService)
+	accuralFundsUseCase := usecase.NewAccuralFundsUseCase(accrualService, userService, userService, userService)
 	reservationFundsUseCase := usecase.NewReservationFundsUseCase(userService, userService, reserveFundsService)
 
 	return &Resources{

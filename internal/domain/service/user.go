@@ -53,3 +53,7 @@ func (s *UserService) UserExist(ctx context.Context, id int64) (bool, error) {
 
 	return isExist, nil
 }
+
+func (s *UserService) Create(ctx context.Context, id int64) error {
+	return s.repo.Create(ctx, id)
+}

@@ -11,17 +11,20 @@ type AccuralFundsUseCase struct {
 	accuralFundsService AccuralFundsService
 	userBanService      UserBanService
 	userExistService    UserExistService
+	userCreateService   UserCreateService
 }
 
 func NewAccuralFundsUseCase(
 	afs AccuralFundsService,
 	ubs UserBanService,
 	ues UserExistService,
+	ucs UserCreateService,
 ) *AccuralFundsUseCase {
 	return &AccuralFundsUseCase{
 		accuralFundsService: afs,
 		userBanService:      ubs,
 		userExistService:    ues,
+		userCreateService:   ucs,
 	}
 }
 
@@ -32,8 +35,11 @@ func (uc *AccuralFundsUseCase) Accural(ctx context.Context, input dto.AccuralDTO
 	if err != nil {
 		return err
 	}
+
 	if !exist {
-		return ErrNotFound
+		if err := uc.userCreateService.Create(ctx, input.UserID); err != nil {
+			return err
+		}
 	}
 
 	timeoutUserIsBan, cancelFuncUserIsBan := context.WithTimeout(ctx, time.Second*1)
