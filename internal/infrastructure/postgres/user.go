@@ -9,6 +9,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 
+	"github.com/AlexeyKluev/user-balance/internal/domain/enum"
 	"github.com/AlexeyKluev/user-balance/internal/domain/model"
 )
 
@@ -49,4 +50,70 @@ func (r *UserRepo) GetByID(ctx context.Context, id int64) (model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *UserRepo) UserExist(ctx context.Context, id int64) (bool, error) {
+	var user model.User
+
+	sqlq, args, err := sq.Select(
+		"id",
+		"first_name",
+		"last_name",
+		"status",
+		"balance",
+		"created_at",
+		"modified_at",
+	).
+		From("users").
+		Where(sq.Eq{"id": id}).
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+
+	if err != nil {
+		return false, err
+	}
+
+	err = r.db.GetContext(ctx, &user, sqlq, args...)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (r *UserRepo) UserIsBan(ctx context.Context, id int64) (bool, error) {
+	var user model.User
+
+	sqlq, args, err := sq.Select(
+		"id",
+		"first_name",
+		"last_name",
+		"status",
+		"balance",
+		"created_at",
+		"modified_at",
+	).
+		From("users").
+		Where(sq.Eq{"id": id, "status": enum.StatusActive}).
+		PlaceholderFormat(sq.Dollar).
+		ToSql()
+
+	if err != nil {
+		return false, err
+	}
+
+	err = r.db.GetContext(ctx, &user, sqlq, args...)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return true, nil
+		}
+
+		return true, err
+	}
+
+	return false, nil
 }

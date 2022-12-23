@@ -8,4 +8,6 @@ import (
 
 type UserRepository interface {
 	GetByID(ctx context.Context, id int64) (model.User, error)
+	UserExist(ctx context.Context, id int64) (bool, error)
+	UserIsBan(ctx context.Context, id int64) (bool, error)
 }

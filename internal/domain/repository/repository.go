@@ -8,9 +8,10 @@ import (
 )
 
 type Repository struct {
-	pgDB   *postgres.PgDB
-	logger *zap.Logger
-	User   UserRepository
+	pgDB    *postgres.PgDB
+	logger  *zap.Logger
+	User    UserRepository
+	Accural AccuralFundsRepository
 }
 
 func NewRepository(
@@ -23,9 +24,10 @@ func NewRepository(
 	}
 
 	return &Repository{
-		pgDB:   pgDB,
-		logger: logger,
-		User:   pgRepo.NewUserRepo(pgDB.Master(), logger),
+		pgDB:    pgDB,
+		logger:  logger,
+		User:    pgRepo.NewUserRepo(pgDB.Master(), logger),
+		Accural: pgRepo.NewAccuralRepo(pgDB.Master(), logger),
 	}, nil
 }
 

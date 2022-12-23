@@ -17,19 +17,20 @@ type Resources struct {
 	Logger           *zap.Logger
 	MetricsCollector *metrics.Collector
 	UserBalanceUC    *usecase.UserBalanceUseCase
+	AccuralFundsUC   *usecase.AccuralFundsUseCase
 }
 
 func NewResources(config *config.Config) (*Resources, error) {
-	// Логгер
+	// Logger
 	logger, err := newLogger(config.IsProduction)
 	if err != nil {
 		return nil, err
 	}
 
-	// Метрики
+	// Metrics
 	metricsCollector := metrics.NewCollector(version.App)
 
-	// Репозиторий
+	// Repository
 	repo, err := repository.NewRepository(
 		config.Postgres,
 		logger,
@@ -40,15 +41,18 @@ func NewResources(config *config.Config) (*Resources, error) {
 
 	// Services
 	userService := service.NewUserService(repo.User)
+	accrualService := service.NewAccrualService(repo.Accural)
 
 	// UseCases
 	balanceUseCase := usecase.NewUserBalanceUseCase(userService)
+	accuralFundsUseCase := usecase.NewAccuralFundsUseCase(accrualService, userService, userService)
 
 	return &Resources{
 		Config:           config,
 		Logger:           logger,
 		MetricsCollector: metricsCollector,
 		UserBalanceUC:    balanceUseCase,
+		AccuralFundsUC:   accuralFundsUseCase,
 	}, nil
 }
 

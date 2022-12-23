@@ -35,3 +35,21 @@ func (s *UserService) Balance(ctx context.Context, id int64) (string, error) {
 
 	return money.New(user.Balance, money.RUB).Display(), nil
 }
+
+func (s *UserService) UserIsBan(ctx context.Context, id int64) (bool, error) {
+	isBan, err := s.repo.UserIsBan(ctx, id)
+	if err != nil {
+		return true, err
+	}
+
+	return isBan, nil
+}
+
+func (s *UserService) UserExist(ctx context.Context, id int64) (bool, error) {
+	isExist, err := s.repo.UserExist(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
+	return isExist, nil
+}

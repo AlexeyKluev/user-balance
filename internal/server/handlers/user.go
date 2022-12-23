@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/AlexeyKluev/user-balance/internal/app"
+	"github.com/AlexeyKluev/user-balance/internal/domain/dto"
 	"github.com/AlexeyKluev/user-balance/internal/usecase"
 )
 
@@ -49,6 +50,7 @@ func NewUserBalanceHandler(resources *app.Resources) http.HandlerFunc {
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(marshal)
 		if err != nil {
 			resources.Logger.Error("failed get user balance", zap.Error(err))
@@ -63,11 +65,8 @@ func NewAccrualFundsHandler(resources *app.Resources) http.HandlerFunc {
 		Amount int64 `json:"amount" validate:"required,gte=0"`
 	}
 
-	type Resp struct {
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
+		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 		if err != nil {
 			resources.Logger.Info("failed parse id in query string", zap.Error(err))
 			http.NotFound(w, r)
@@ -90,7 +89,25 @@ func NewAccrualFundsHandler(resources *app.Resources) http.HandlerFunc {
 			return
 		}
 
-		http.Error(w, "not implemented", 500)
+		err = resources.AccuralFundsUC.Accural(r.Context(), dto.AccuralDTO{
+			UserID: id,
+			Amount: req.Amount,
+		})
+		if err != nil {
+			if errors.Is(err, usecase.ErrUserIsBanned) {
+				http.Error(w, http.StatusText(400), 400)
+				return
+			}
+			if errors.Is(err, usecase.ErrNotFound) {
+				http.Error(w, http.StatusText(404), 404)
+				return
+			}
+			resources.Logger.Error("failed accural user balance", zap.Error(err))
+			http.Error(w, http.StatusText(500), 500)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
 		return
 	}
 }

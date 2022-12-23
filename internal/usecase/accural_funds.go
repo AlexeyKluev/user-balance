@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"context"
+	"time"
+
 	"github.com/AlexeyKluev/user-balance/internal/domain/dto"
 )
 
@@ -23,19 +26,21 @@ func NewAccuralFundsUseCase(
 }
 
 type AccuralFundsService interface {
-	Accural(dto.AccuralDTO) error
+	Accural(context.Context, dto.AccuralDTO) error
 }
 
 type UserBanService interface {
-	UserIsBan(id int64) (bool, error)
+	UserIsBan(ctx context.Context, id int64) (bool, error)
 }
 
 type UserExistService interface {
-	UserExist(id int64) (bool, error)
+	UserExist(ctx context.Context, id int64) (bool, error)
 }
 
-func (uc *AccuralFundsUseCase) Accural(input dto.AccuralDTO) error {
-	exist, err := uc.userExistService.UserExist(input.UserID)
+func (uc *AccuralFundsUseCase) Accural(ctx context.Context, input dto.AccuralDTO) error {
+	timeoutUserExist, cancelFuncUserExist := context.WithTimeout(ctx, time.Second*1)
+	defer cancelFuncUserExist()
+	exist, err := uc.userExistService.UserExist(timeoutUserExist, input.UserID)
 	if err != nil {
 		return err
 	}
@@ -43,7 +48,9 @@ func (uc *AccuralFundsUseCase) Accural(input dto.AccuralDTO) error {
 		return ErrNotFound
 	}
 
-	isBan, err := uc.userBanService.UserIsBan(input.UserID)
+	timeoutUserIsBan, cancelFuncUserIsBan := context.WithTimeout(ctx, time.Second*1)
+	defer cancelFuncUserIsBan()
+	isBan, err := uc.userBanService.UserIsBan(timeoutUserIsBan, input.UserID)
 	if err != nil {
 		return err
 	}
@@ -51,7 +58,9 @@ func (uc *AccuralFundsUseCase) Accural(input dto.AccuralDTO) error {
 		return ErrUserIsBanned
 	}
 
-	err = uc.accuralFundsService.Accural(input)
+	timeoutAccural, cancelFuncAccural := context.WithTimeout(ctx, time.Second*3)
+	defer cancelFuncAccural()
+	err = uc.accuralFundsService.Accural(timeoutAccural, input)
 	if err != nil {
 		return err
 	}
