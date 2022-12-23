@@ -14,6 +14,17 @@ import (
 	"github.com/AlexeyKluev/user-balance/internal/version"
 )
 
+// @title           Swagger User-balance service API
+// @version         0.0.1
+
+// @contact.name   Aleksey Klyuev
+// @contact.email  welcome@adklyuev.ru
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /
 func main() {
 	// Загружаем env-переменные
 	_ = godotenv.Load()

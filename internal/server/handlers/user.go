@@ -15,10 +15,22 @@ import (
 	"github.com/AlexeyKluev/user-balance/internal/usecase"
 )
 
+type userBalanceResp struct {
+	Balance string `json:"balance"`
+}
+
+// NewUserBalanceHandler godoc
+// @Summary      Show an account balance
+// @Description  get balance by ID
+// @Tags         Balance
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  userBalanceResp
+// @Failure      404
+// @Failure      500
+// @Router       /users/{id}/balance [get]
 func NewUserBalanceHandler(resources *app.Resources) http.HandlerFunc {
-	type Resp struct {
-		Balance string `json:"balance"`
-	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
@@ -39,7 +51,7 @@ func NewUserBalanceHandler(resources *app.Resources) http.HandlerFunc {
 			return
 		}
 
-		b := Resp{
+		b := userBalanceResp{
 			Balance: balance,
 		}
 

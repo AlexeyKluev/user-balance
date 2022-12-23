@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 	"go.uber.org/zap"
 	"gopkg.in/tylerb/graceful.v1"
 
@@ -78,6 +80,11 @@ func (s *Server) InitRoutes(resources *app.Resources) {
 	s.router.Get("/users/{id:[0-9]+}/balance", handlers.NewUserBalanceHandler(resources))
 	s.router.Post("/users/{id:[0-9]+}/accural", handlers.NewAccrualFundsHandler(resources))
 	s.router.Post("/users/{id:[0-9]+}/reservation", handlers.NewReservationFundsHandler(resources))
+
+	// /swagger/index.html
+	s.router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), //The url pointing to API definition
+	))
 }
 
 func (s *Server) ListenAndServe(addr string, shutdownInitiated func()) error {

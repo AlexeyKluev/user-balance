@@ -1,0 +1,67 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Swagger User-balance service API",
+        "contact": {
+            "name": "Aleksey Klyuev",
+            "email": "welcome@adklyuev.ru"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.0.1"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/users/{id}/balance": {
+            "get": {
+                "description": "get balance by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Show an account balance",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.userBalanceResp"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handlers.userBalanceResp": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
