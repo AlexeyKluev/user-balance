@@ -20,8 +20,8 @@ type userBalanceResp struct {
 }
 
 // NewUserBalanceHandler godoc
-// @Summary      Show an account balance
-// @Description  get balance by ID
+// @Summary      Баланс пользователя
+// @Description  Возвращает баланс пользователя по id
 // @Tags         Balance
 // @Accept       json
 // @Produce      json
@@ -72,11 +72,25 @@ func NewUserBalanceHandler(resources *app.Resources) http.HandlerFunc {
 	}
 }
 
-func NewAccrualFundsHandler(resources *app.Resources) http.HandlerFunc {
-	type Req struct {
-		Amount int64 `json:"amount" validate:"required,gte=0"`
-	}
+type accuralFundsReq struct {
+	Amount int64 `json:"amount" validate:"required,gte=0"`
+}
 
+// NewAccrualFundsHandler godoc
+// @Summary      Зачисление средств на баланс
+// @Description  Добавляет средства на баланс пользователя
+// @Tags         Balance
+// @Accept       json
+// @Produce      json
+// @Param        id      path      int             true  "User ID"
+// @Param 		 request body      accuralFundsReq true "123"
+// @Success      201
+// @Failure      403
+// @Failure      404
+// @Failure      422
+// @Failure      500
+// @Router       /users/{id}/accural [post]
+func NewAccrualFundsHandler(resources *app.Resources) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 		if err != nil {
@@ -85,7 +99,7 @@ func NewAccrualFundsHandler(resources *app.Resources) http.HandlerFunc {
 			return
 		}
 
-		var req Req
+		var req accuralFundsReq
 		err = json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			resources.Logger.Info("failed parse body", zap.Error(err))
@@ -124,13 +138,28 @@ func NewAccrualFundsHandler(resources *app.Resources) http.HandlerFunc {
 	}
 }
 
-func NewReservationFundsHandler(resources *app.Resources) http.HandlerFunc {
-	type Req struct {
-		ServiceID int64 `json:"service_id" validate:"required,gte=0"`
-		OrderID   int64 `json:"order_id" validate:"required,gte=0"`
-		Amount    int64 `json:"amount" validate:"required,gte=0"`
-	}
+type reservationFundsReq struct {
+	ServiceID int64 `json:"service_id" validate:"required,gte=0"`
+	OrderID   int64 `json:"order_id" validate:"required,gte=0"`
+	Amount    int64 `json:"amount" validate:"required,gte=0"`
+}
 
+// NewReservationFundsHandler godoc
+// @Summary      Резервирование средств
+// @Description  Резервирует средства с баланса пользователя
+// @Tags         Balance
+// @Accept       json
+// @Produce      json
+// @Param        id      path      int             	   true  "User ID"
+// @Param 		 request body      reservationFundsReq true "123"
+// @Success      201
+// @Failure      400
+// @Failure      403
+// @Failure      404
+// @Failure      422
+// @Failure      500
+// @Router       /users/{id}/reservation [post]
+func NewReservationFundsHandler(resources *app.Resources) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 0)
 		if err != nil {
@@ -139,7 +168,7 @@ func NewReservationFundsHandler(resources *app.Resources) http.HandlerFunc {
 			return
 		}
 
-		var req Req
+		var req reservationFundsReq
 		err = json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			resources.Logger.Info("failed parse body", zap.Error(err))

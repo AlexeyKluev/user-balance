@@ -1,5 +1,29 @@
 basePath: /
 definitions:
+  handlers.accuralFundsReq:
+    properties:
+      amount:
+        minimum: 0
+        type: integer
+    required:
+    - amount
+    type: object
+  handlers.reservationFundsReq:
+    properties:
+      amount:
+        minimum: 0
+        type: integer
+      order_id:
+        minimum: 0
+        type: integer
+      service_id:
+        minimum: 0
+        type: integer
+    required:
+    - amount
+    - order_id
+    - service_id
+    type: object
   handlers.userBalanceResp:
     properties:
       balance:
@@ -16,11 +40,44 @@ info:
   title: Swagger User-balance service API
   version: 0.0.1
 paths:
+  /users/{id}/accural:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет средства на баланс пользователя
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: "123"
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.accuralFundsReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+      summary: Зачисление средств на баланс
+      tags:
+      - Balance
   /users/{id}/balance:
     get:
       consumes:
       - application/json
-      description: get balance by ID
+      description: Возвращает баланс пользователя по id
       parameters:
       - description: User ID
         in: path
@@ -38,7 +95,42 @@ paths:
           description: Not Found
         "500":
           description: Internal Server Error
-      summary: Show an account balance
+      summary: Баланс пользователя
+      tags:
+      - Balance
+  /users/{id}/reservation:
+    post:
+      consumes:
+      - application/json
+      description: Резервирует средства с баланса пользователя
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: "123"
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.reservationFundsReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "422":
+          description: Unprocessable Entity
+        "500":
+          description: Internal Server Error
+      summary: Резервирование средств
       tags:
       - Balance
 swagger: "2.0"

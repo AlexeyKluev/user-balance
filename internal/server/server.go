@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
-	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
+	_ "github.com/swaggo/http-swagger/example/go-chi/docs" // swagger for chi
 	"go.uber.org/zap"
 	"gopkg.in/tylerb/graceful.v1"
 
@@ -83,7 +83,7 @@ func (s *Server) InitRoutes(resources *app.Resources) {
 
 	// /swagger/index.html
 	s.router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), //The url pointing to API definition
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), // The url pointing to API definition
 	))
 }
 

@@ -15,9 +15,9 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/users/{id}/balance": {
-            "get": {
-                "description": "get balance by ID",
+        "/users/{id}/accural": {
+            "post": {
+                "description": "Добавляет средства на баланс пользователя",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,7 +27,57 @@
                 "tags": [
                     "Balance"
                 ],
-                "summary": "Show an account balance",
+                "summary": "Зачисление средств на баланс",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "123",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.accuralFundsReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/users/{id}/balance": {
+            "get": {
+                "description": "Возвращает баланс пользователя по id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Баланс пользователя",
                 "parameters": [
                     {
                         "type": "integer",
@@ -52,9 +102,96 @@
                     }
                 }
             }
+        },
+        "/users/{id}/reservation": {
+            "post": {
+                "description": "Резервирует средства с баланса пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Резервирование средств",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "123",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.reservationFundsReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "handlers.accuralFundsReq": {
+            "type": "object",
+            "required": [
+                "amount"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "handlers.reservationFundsReq": {
+            "type": "object",
+            "required": [
+                "amount",
+                "order_id",
+                "service_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "order_id": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "service_id": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
         "handlers.userBalanceResp": {
             "type": "object",
             "properties": {
